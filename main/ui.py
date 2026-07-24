@@ -3,9 +3,6 @@ import tkinter as tk
 import pandas as pd
 import math
 
-from calculator import AttendanceCalculator
-
-
 class AttendanceUI(ctk.CTk):
 
     def __init__(self):
@@ -18,8 +15,9 @@ class AttendanceUI(ctk.CTk):
         self.geometry("900x600")
 
         ctk.set_appearance_mode("Dark")
+        url = "https://raw.githubusercontent.com/ronaksingh93575/calc_attendence/refs/heads/main/main/academic_time_table.csv"
 
-        self.data = pd.read_csv("academic_time_table.csv")
+        self.data = pd.read_csv(url)
         self.subject_rows = []
         self.data["Date"] = pd.to_datetime(self.data["Date"])
         self.subject_columns = {
