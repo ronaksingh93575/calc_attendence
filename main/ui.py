@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import tkinter as tk
 import pandas as pd
+import math
 
 from calculator import AttendanceCalculator
 
@@ -18,31 +19,37 @@ class AttendanceUI(ctk.CTk):
 
         ctk.set_appearance_mode("Dark")
 
-        self.subject_rows = []
         self.data = pd.read_csv("academic_time_table.csv")
+        self.subject_rows = []
+        self.data["Date"] = pd.to_datetime(self.data["Date"])
         self.subject_columns = {
-            "Select Subject" : 0,
-            "RESEARCH METHODOLOGY": "RM",
-            "RESEARCH METHODOLOGY LAB": "RM(Lab)",            
-            "INFERENTIAL STATISTICS": "IS",
-            "MACHINE LEARNING ALGORITHMS": "ML",
-            "MACHINE LEARNING ALGORITHMS LAB": "ML(Lab)",
-            "APPLIED DATA SCIENCE": "ADS",
-            "APPLIED DATA SCIENCE LAB": "ADS(Lab)",
-            "BIG DATA ECOSYSTEM": "BDE"
+            "Select Subject": "None",
+            "RESEARCH METHODOLOGY"              : "RM",
+            "RESEARCH METHODOLOGY LAB"          : "RM(Lab)",
+            "INFERENTIAL STATISTICS"            : "IS",
+            "MACHINE LEARNING ALGORITHMS"       : "ML",
+            "MACHINE LEARNING ALGORITHMS LAB"   : "ML(Lab)",
+            "APPLIED DATA SCIENCE"              : "ADS",
+            "APPLIED DATA SCIENCE LAB"          : "ADS(Lab)",
+            "BIG DATA ECOSYSTEM"                : "BDE"
         }
+        self.subjects = list(self.subject_columns.keys())
 
         self.months = [
 
-            "August",
-
+            "July",
+            "August" ,
             "September",
-
             "October",
-
             "November"
-
         ]
+        self.month_map = {
+            "July" : 7,
+            "August": 8,
+            "September": 9,
+            "October": 10,
+            "November": 11
+        }
 
         self.create_widgets()
 
@@ -70,13 +77,9 @@ class AttendanceUI(ctk.CTk):
         ).grid(row=0, column=0, padx=10, pady=10)
 
         self.month_menu = ctk.CTkOptionMenu(
-
             top,
-
             values=self.months,
-
             command=self.update_working_days
-
         )
 
         self.month_menu.grid(row=0, column=1)
@@ -115,10 +118,8 @@ class AttendanceUI(ctk.CTk):
         headers = [
 
             "Subject",
-
-            "Classes / 5 Days",
-
-            "Need (75%)"
+            "Total Classes",
+            "Required (75%)"
 
         ]
 
@@ -167,21 +168,10 @@ class AttendanceUI(ctk.CTk):
 
         self.generate_subject_rows("1")
 
-    def update_working_days(self, month):
 
-        working_days = {
-            "August": 19,
-            "September": 20,
-            "October": 19,
-            "November": 15
-        }
 
-        self.working_days = working_days.get(month, 0)
-
-        self.working_label.configure(
-            text=f"Working Days : {self.working_days}"
-        )
     def generate_subject_rows(self, count):
+        print(self.subject_rows)
 
         for row in self.subject_rows:
             for widget in row:
@@ -196,7 +186,7 @@ class AttendanceUI(ctk.CTk):
             # Subject Dropdown
             subject = ctk.CTkComboBox(
                 self.table,
-                values=list(self.subject_data.keys()),
+                values = list(self.subject_columns.keys()),
                 width=280
             )
 
@@ -208,8 +198,9 @@ class AttendanceUI(ctk.CTk):
             )
 
             # Classes Entry
-            classes = ctk.CTkEntry(
+            classes = ctk.CTkLabel(
                 self.table,
+                text ="-",
                 width=100
             )
 
@@ -220,75 +211,80 @@ class AttendanceUI(ctk.CTk):
             )
 
             # Result Label
-            result = ctk.CTkLabel(
+            required = ctk.CTkLabel(
                 self.table,
                 text="-",
-                width=80
+                width=100
             )
 
-            result.grid(
+            required.grid(
                 row=i + 1,
                 column=2,
                 padx=10
-            )
-
-            # Auto-fill classes when subject changes
-            subject.configure(
-                command=lambda value,
-                entry=classes: self.subject_selected(value, entry)
             )
 
             self.subject_rows.append(
                 (
                     subject,
                     classes,
-                    result
+                    required
                 )
             )
+    def update_working_days(self, month):
+        print(f"Selected Month: {month}")
+        
+    def update_working_days(self, month):
+
+        month_number = self.month_map[month]
+
+        month_data = self.data[
+            self.data["Date"].dt.month == month_number
+        ]
+
+        working_days = month_data[
+            month_data["Status"] == "Working"
+        ].shape[0]
+
+        self.working_days = working_days
+        self.working_label.configure(
+            text = f"Working Days : {working_days}"
+        )
+
     def calculate(self):
+        print("calculate button clicked")
+
+        month = self.month_menu.get()
+
+        month_number = self.month_map[month]
+
+        month_data = self.data[
+            self.data["Date"].dt.month == month_number
+        ]
 
         total_classes = 0
 
-        for subject, classes, result in self.subject_rows:
+        for subject_box, total_label, required_label in self.subject_rows:
 
-            try:
+            subject_name = subject_box.get()
 
-                value = int(classes.get())
-
-            except ValueError:
-
-                result.configure(text="Invalid")
-
+            if subject_name == "Select Subject":
                 continue
 
-            estimated, needed = AttendanceCalculator.calculate_subject(
+            column = self.subject_columns[subject_name]
 
-                self.working_days,
+            # Sum all lectures of that subject
+            classes = month_data[column].fillna(0).sum()
 
-                value
+            required = math.ceil(classes * 0.75)
 
-            )
+            total_label.configure(text=str(classes))
 
-            total_classes += estimated
+            required_label.configure(text=str(required))
 
-            result.configure(
+            total_classes += classes
 
-                text=f"{needed}/{estimated}"
-
-            )
-
-        overall = AttendanceCalculator.calculate_overall(
-            total_classes
-        )
+        overall_required = math.ceil(total_classes * 0.75)
 
         self.total_label.configure(
-
-            text=f"Total Classes : {total_classes}     Need Overall : {overall}"
-
+            text=f"Overall Classes : {total_classes}    Required : {overall_required}"
         )
-    def subject_selected(self, subject_name, class_entry):
-
-        classes = self.subject_data.get(subject_name, "")
-
-        class_entry.delete(0, "end")
-        class_entry.insert(0, str(classes))
