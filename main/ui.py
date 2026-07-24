@@ -111,6 +111,15 @@ class AttendanceUI(ctk.CTk):
 
         self.working_label.grid(row=0, column=4, padx=20)
 
+        self.assumption_var = tk.BooleanVar()
+        self.assumption_check = ctk.CTkCheckBox(
+            top,
+            text = "Bunk",
+            variable= self.assumption_var,
+            command=self.toggle_assumption
+        )
+        self.assumption_check.grid(row=0, column= 5, padx= 20)
+
         self.table = ctk.CTkFrame(self)
 
         self.table.pack(fill="both", expand=True, padx=20, pady=20)
@@ -147,6 +156,40 @@ class AttendanceUI(ctk.CTk):
             text=""
 
         )
+        self.assumption_frame = ctk.CTkFrame(self)
+
+        ctk.CTkLabel(
+            self.assumption_frame,
+            text="From Date"
+        ).grid(row=0,column=0,padx=10,pady=10)
+
+        self.from_date = ctk.CTkEntry(
+            self.assumption_frame,
+            placeholder_text="DD-MM-YYYY",
+            width=120
+        )
+
+        self.from_date.grid(row=0,column=1)
+
+        ctk.CTkLabel(
+            self.assumption_frame,
+            text="To Date"
+        ).grid(row=0,column=2,padx=10)
+
+        self.to_date = ctk.CTkEntry(
+            self.assumption_frame,
+            placeholder_text="DD-MM-YYYY",
+            width=120
+        )
+
+        self.to_date.grid(row=0,column=3)
+
+        ctk.CTkButton(
+            self.assumption_frame,
+            text="Predict",
+            command=self.predict_attendance
+        ).grid(row=0,column=4,padx=20)
+
 
         self.total_label.pack(pady=10)
 
@@ -230,6 +273,8 @@ class AttendanceUI(ctk.CTk):
                     required
                 )
             )
+
+
     def update_working_days(self, month):
         print(f"Selected Month: {month}")
 
@@ -256,6 +301,17 @@ class AttendanceUI(ctk.CTk):
 
     def calculate(self):
         print("calculate button clicked")
+        print("From:", self.from_date.get())
+        print("To:", self.to_date.get())
+
+        from_date = pd.to_datetime(
+            self.from_date.get(),
+            dayfirst=True
+        )
+        to_date = pd.to_datetime(
+            self.to_date.get(),
+            dayfirst=True
+        )
 
         month = self.month_menu.get()
 
@@ -265,6 +321,10 @@ class AttendanceUI(ctk.CTk):
             self.data["Date"].dt.month == month_number
         ]
 
+        skip_data = month_data[
+            (month_data["Date"] >= from_date)&
+            (month_data["Date"] <= to_date)
+        ]
         total_classes = 0
 
         for subject_box, total_label, required_label in self.subject_rows:
@@ -278,6 +338,7 @@ class AttendanceUI(ctk.CTk):
 
             # Sum all lectures of that subject
             classes = month_data[column].fillna(0).sum()
+            #lecture
 
             required = math.ceil(classes * 0.75)
 
@@ -292,3 +353,73 @@ class AttendanceUI(ctk.CTk):
         self.total_label.configure(
             text=f"Overall Classes : {total_classes}    Required : {overall_required}"
         )
+    def toggle_assumption(self):
+
+        if self.assumption_var.get():
+
+            self.assumption_frame.pack(
+                fill="x",
+                padx=20,
+                pady=10
+            )
+
+        else:
+
+            self.assumption_frame.pack_forget()
+
+    def predict_attendance(self):
+
+        month = self.month_menu.get()
+
+        month_number = self.month_map[month]
+
+        month_data = self.data[
+            self.data["Date"].dt.month == month_number
+        ]
+
+        from_date = pd.to_datetime(
+            self.from_date.get(),
+            dayfirst=True
+        )
+
+        to_date = pd.to_datetime(
+            self.to_date.get(),
+            dayfirst=True
+        )
+
+        skip_data = month_data[
+            (month_data["Date"] >= from_date) &
+            (month_data["Date"] <= to_date)
+        ]
+
+        for subject_box, total_label, predict_label in self.subject_rows:
+
+            subject_name = subject_box.get()
+
+            if subject_name not in self.subject_columns:
+                continue
+
+            column = self.subject_columns[subject_name]
+
+            total_classes = month_data[column].fillna(0).sum()
+
+            skipped_classes = skip_data[column].fillna(0).sum()
+
+            remaining_classes = total_classes - skipped_classes
+
+            if total_classes == 0:
+
+                predict_label.configure(
+                    text="-"
+                )
+
+                continue
+
+            predicted_percentage = (
+                remaining_classes /
+                total_classes
+            ) * 100
+
+            predict_label.configure(
+                text=f"{predicted_percentage:.2f}%"
+            )
