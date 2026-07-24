@@ -232,7 +232,7 @@ class AttendanceUI(ctk.CTk):
             )
     def update_working_days(self, month):
         print(f"Selected Month: {month}")
-        
+
     def update_working_days(self, month):
 
         month_number = self.month_map[month]
@@ -240,9 +240,13 @@ class AttendanceUI(ctk.CTk):
         month_data = self.data[
             self.data["Date"].dt.month == month_number
         ]
+        print(month_data.head())
+        print("Rows:", len(month_data))
+
+        print(self.data["Status"].unique())
 
         working_days = month_data[
-            month_data["Status"] == "Working"
+            month_data["Status"] == "Working day"
         ].shape[0]
 
         self.working_days = working_days
