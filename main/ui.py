@@ -140,20 +140,11 @@ class AttendanceUI(ctk.CTk):
 
                 font=("Arial", 15, "bold")
 
-            ).grid(
-                row=0,
-                column=i,
-                padx=15,
-                pady=10
-            )
+            ).grid( row=0, column=i, padx=15, pady=10 )
 
-        self.total_label = ctk.CTkLabel(
+        self.total_label = ctk.CTkLabel( self, text="" )
 
-            self,
 
-            text=""
-
-        )
         self.assumption_frame = ctk.CTkFrame(self)
 
         ctk.CTkLabel(
@@ -189,7 +180,6 @@ class AttendanceUI(ctk.CTk):
         ).grid(row=0,column=4,padx=20)
 
 
-        self.total_label.pack(pady=10)
 
         calculate = ctk.CTkButton(
 
