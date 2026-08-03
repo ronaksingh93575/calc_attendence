@@ -1,4 +1,4 @@
-# 🎓 SRM Attendance Calculator
+# 🎓 SRM Attendance Calculator M.Tech 2028
 
 A lightweight desktop application built with **Python**, **CustomTkinter**, and **Pandas** to help SRM PG students manage their attendance according to the 75% attendance requirement.
 
