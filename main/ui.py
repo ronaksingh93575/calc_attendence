@@ -23,12 +23,9 @@ class AttendanceUI(ctk.CTk):
         self.subject_columns = {
             "Select Subject": "None",
             "RESEARCH METHODOLOGY"              : "RM",
-            "RESEARCH METHODOLOGY LAB"          : "RM(Lab)",
             "INFERENTIAL STATISTICS"            : "IS",
             "MACHINE LEARNING ALGORITHMS"       : "ML",
-            "MACHINE LEARNING ALGORITHMS LAB"   : "ML(Lab)",
             "APPLIED DATA SCIENCE"              : "ADS",
-            "APPLIED DATA SCIENCE LAB"          : "ADS(Lab)",
             "BIG DATA ECOSYSTEM"                : "BDE"
         }
         self.subjects = list(self.subject_columns.keys())
@@ -142,8 +139,15 @@ class AttendanceUI(ctk.CTk):
 
             ).grid( row=0, column=i, padx=15, pady=10 )
 
-        self.total_label = ctk.CTkLabel( self, text="" )
-
+        self.total_label = ctk.CTkLabel(
+            self, 
+            text="" 
+            )
+        self.total_label = ctk.CTkLabel(
+            self,
+            text="Waiting..."
+        )
+        self.total_label.pack(pady=10)
 
         self.assumption_frame = ctk.CTkFrame(self)
 
@@ -288,9 +292,9 @@ class AttendanceUI(ctk.CTk):
         )
 
     def calculate(self):
-        print("calculate button clicked")
-        print("From:", self.from_date.get())
-        print("To:", self.to_date.get())
+        # print("calculate button clicked")
+        # print("From:", self.from_date.get())
+        # print("To:", self.to_date.get())
 
         from_date = pd.to_datetime(
             self.from_date.get(),
@@ -330,6 +334,7 @@ class AttendanceUI(ctk.CTk):
 
             required = math.ceil(classes * 0.75)
 
+
             total_label.configure(text=str(classes))
 
             required_label.configure(text=str(required))
@@ -337,9 +342,11 @@ class AttendanceUI(ctk.CTk):
             total_classes += classes
 
         overall_required = math.ceil(total_classes * 0.75)
-
+        print(total_classes)
+        print(overall_required)
+        print(self.total_label.cget("text"))
         self.total_label.configure(
-            text=f"Overall Classes : {total_classes}    Required : {overall_required}"
+            text=f"Overall Classes : {int(total_classes)}    Required : {overall_required}"
         )
     def toggle_assumption(self):
 
