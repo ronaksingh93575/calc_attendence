@@ -122,20 +122,3 @@ Date,Day,Status,Week,Sequence,IS,ML,BDE,RM,ADS
 11/18/2026,Wednesday,Working day,Wk 17,Day 1,,,,,2
 11/19/2026,Thursday,Working day,Wk 17,Day 2,,4,,,1
 11/20/2026,Friday,Working day,Wk 17,Day 3,1,1,2,,3
-11/21/2026,Saturday,Holiday,Wk 0,-,,,,,
-11/22/2026,Sunday,Holiday,Wk 0,-,,,,,
-11/23/2026,Monday,Working day,Wk 17,Day 4,2,1,1,1,
-11/24/2026,Tuesday,Working day,Wk 17,Day 5,1,,1,4,
-11/25/2026,Wednesday,Working day,Wk 18,Day 1,,,,,2
-11/26/2026,Thursday,Working day,Wk 18,Day 2,,4,,,1
-11/27/2026,Friday,Working day,Wk 18,Day 3,1,1,2,,3
-11/28/2026,Saturday,Holiday,Wk 0,-,,,,,
-11/29/2026,Sunday,Holiday,Wk 0,-,,,,,
-11/30/2026,Monday,Working day,Wk 18,Day 4,2,1,1,1,
-12/01/2026,Tuesday,Working day,Wk 18,Day 5,1,,1,4,
-12/02/2026,Wednesday,Working day,Wk 19,Day 1,,,,,2
-12/03/2026,Thursday,Working day,Wk 19,Day 2,,4,,,1
-12/04/2026,Friday,Working day,Wk 19,Day 3,1,1,2,,3
-12/05/2026,Saturday,Holiday,Wk 0,-,,,,,
-12/06/2026,Sunday,Holiday,Wk 0,-,,,,,
-12/07/2026,Monday,Working day,Wk 19,Day 4,2,1,1,1,
