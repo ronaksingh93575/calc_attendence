@@ -24,7 +24,8 @@ The application reads the academic timetable from a remotely hosted CSV file, al
 
 ## 📸 Preview
 
-> *(Add screenshots here)*
+> <img width="1127" height="788" alt="main_interface" src="https://github.com/user-attachments/assets/2dedc7f8-befd-4828-8e51-9837f2e00302" />
+
 
 ## 🚀 Installation
 
