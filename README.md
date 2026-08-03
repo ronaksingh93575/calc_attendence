@@ -49,6 +49,10 @@ python main.py
 
 Or use the standalone Windows executable.
 
+```bash
+https://drive.google.com/uc?export=download&id=1r1VBKLooYbk1j0cXw2UQyYHcM6t6ewAi
+```
+
 ## 📌 Requirements
 
 - Windows
